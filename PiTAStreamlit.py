@@ -3,7 +3,7 @@ import streamlit as st
 import datetime
 
 # Configura API Key
-client = OpenAI(api_key=st.secrets.get("openai_api_key", "INSERISCI_LA_TUA_API_KEY"))
+client = OpenAI(api_key=st.secrets["open_ai_key"])
 
 # === UI ===
 st.set_page_config(page_title="PiTA – Personal Trainer AI", layout="wide")
