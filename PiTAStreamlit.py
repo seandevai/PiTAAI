@@ -29,7 +29,7 @@ with tab1:
             ] + [{"role": "user", "content": msg[1]} for msg in st.session_state.chat_history if msg[0] == "👤 Tu"]
 
             response = client.chat.completions.create(
-                model="gpt-4",
+                model="gpt-3.5-turbo",
                 messages=messages,
                 max_tokens=300
             )
