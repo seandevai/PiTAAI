@@ -1,20 +1,17 @@
-# streamlit_app.py
-
+from openai import OpenAI
 import streamlit as st
 import datetime
-import openai
 
-# === CONFIG ===
+# Configura API Key
+client = OpenAI(api_key=st.secrets.get("openai_api_key", "INSERISCI_LA_TUA_API_KEY"))
+
+# === UI ===
 st.set_page_config(page_title="PiTA – Personal Trainer AI", layout="wide")
-openai.api_key = st.secrets.get("openai_api_key", "INSERISCI_LA_TUA_API_KEY")
-
-# === HEADER ===
 st.title("🏋️‍♂️ PiTA – Il tuo Assistente Virtuale di Personal Training")
 
-# === TABS ===
 tab1, tab2 = st.tabs(["💬 Chat AI", "📅 Appuntamenti"])
 
-# === CHAT AI ===
+# === CHAT ===
 with tab1:
     st.subheader("Parla con PiTA")
 
@@ -27,14 +24,17 @@ with tab1:
         st.session_state.chat_history.append(("👤 Tu", user_input))
 
         try:
-            response = openai.ChatCompletion.create(
+            messages = [
+                {"role": "system", "content": "Sei PiTA, un assistente AI esperto in personal training, alimentazione e benessere fisico. Dai consigli pratici e motivanti."}
+            ] + [{"role": "user", "content": msg[1]} for msg in st.session_state.chat_history if msg[0] == "👤 Tu"]
+
+            response = client.chat.completions.create(
                 model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "Sei PiTA, un assistente AI esperto in personal training, alimentazione e benessere fisico. Dai consigli pratici e motivanti."}
-                ] + [{"role": "user", "content": msg[1]} for msg in st.session_state.chat_history if msg[0] == "👤 Tu"],
+                messages=messages,
                 max_tokens=300
             )
-            reply = response.choices[0].message["content"]
+            reply = response.choices[0].message.content
+
         except Exception as e:
             reply = f"❌ Errore: {e}"
 
